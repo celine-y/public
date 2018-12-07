@@ -94,7 +94,7 @@ public final class NameBook {
         builder.append(person.getData()).append(System.lineSeparator());
 
         for (String name : friendNames) {
-            builder.append("- ").append(name).append(System.lineSeparator());
+            builder.append("- ").append(name);
         }
 
         return builder.toString();
