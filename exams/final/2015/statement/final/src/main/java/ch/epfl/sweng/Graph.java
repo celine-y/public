@@ -41,10 +41,7 @@ public final class Graph<D> implements IGraphElement<D> {
         GetAllNodesVisitor<D> getAllNodesVisitor = new GetAllNodesVisitor<>();
         getAllNodesVisitor.visit(this);
 
-        List<GraphNode<D>> nodes = getAllNodesVisitor.getGraphNodeList();
-
-
-        return nodes;
+        return getAllNodesVisitor.getGraphNodeList();
     }
 
     public GraphNode<D> getRoot(){

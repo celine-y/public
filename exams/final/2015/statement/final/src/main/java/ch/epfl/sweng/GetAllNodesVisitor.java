@@ -12,22 +12,25 @@ public class GetAllNodesVisitor<D> implements IGraphElementVisitor<D> {
 
     @Override
     public void visit(Graph<D> graph) {
-        this.visit(graph.getRoot());
-//        graph.getRoot().accept(this);
+        graph.getRoot().accept(this);
     }
 
     @Override
     public void visit(GraphEdge<D> edge) {
-        graphNodeList.add(edge.getDestination());
+        edge.getDestination().accept(this);
     }
 
     @Override
     public void visit(GraphNode<D> node) {
-        GraphEdgeIterator<D> graphEdgeIterator = node.getForwardEdges();
-
-        while (graphEdgeIterator.hasNext()){
-            graphNodeList.add(graphEdgeIterator.next().getDestination());
+        if (graphNodeList.contains(node)){
+            return;
         }
+
+        if (node.getData() != null){
+            graphNodeList.add(node);
+        }
+
+        node.getForwardEdges().forEachRemaining(e -> e.accept(this));
     }
 
     public List<GraphNode<D>> getGraphNodeList(){
