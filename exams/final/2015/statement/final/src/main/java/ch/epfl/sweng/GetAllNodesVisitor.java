@@ -23,8 +23,10 @@ public class GetAllNodesVisitor<D> implements IGraphElementVisitor<D> {
 
     @Override
     public void visit(GraphNode<D> node) {
-        for (GraphEdge<D> edge: node.getForwardEdges()) {
-            graphNodeList.add(edge.getDestination());
+        GraphEdgeIterator<D> graphEdgeIterator = node.getForwardEdges();
+
+        while (graphEdgeIterator.hasNext()){
+            graphNodeList.add(graphEdgeIterator.next().getDestination());
         }
     }
 
