@@ -37,14 +37,23 @@ public final class NameBook {
         }
 
         List<GraphNode<String>> friends = new ArrayList<>();
+        GraphEdgeIterator<String> graphEdgeIterator = personNode.getForwardEdges();
 
-        for (GraphEdge<String> edge : personNode.getForwardEdges()) {
-            final GraphNode<String> friend = edge.getDestination();
+        while (graphEdgeIterator.hasNext()){
+            GraphNode<String> friend = graphEdgeIterator.next().getDestination();
             if (!friends.contains(friend)) {
                 friends.add(friend);
                 friends.addAll(findFriends(friend.getData(), distance - 1));
             }
         }
+
+//        for (GraphEdge<String> edge : personNode.getForwardEdges()) {
+//            final GraphNode<String> friend = edge.getDestination();
+//            if (!friends.contains(friend)) {
+//                friends.add(friend);
+//                friends.addAll(findFriends(friend.getData(), distance - 1));
+//            }
+//        }
 
         return friends;
     }
@@ -84,9 +93,16 @@ public final class NameBook {
     private String printPerson(GraphNode<String> person) {
         List<String> friendNames = new ArrayList<>();
 
-        for (GraphEdge<String> edge : person.getForwardEdges()) {
+        GraphEdgeIterator<String> graphEdgeIterator = person.getForwardEdges();
+
+        while (graphEdgeIterator.hasNext()){
+            GraphEdge<String> edge = graphEdgeIterator.next();
             friendNames.add(edge.getDestination().getData());
         }
+
+//        for (GraphEdge<String> edge : person.getForwardEdges()) {
+//            friendNames.add(edge.getDestination().getData());
+//        }
 
         Collections.sort(friendNames, new NaturalOrderFriendsComparator());
 
