@@ -1,6 +1,6 @@
 package ch.epfl.sweng;
 
-public final class GraphEdge<D> {
+public final class GraphEdge<D> implements IGraphElement<D>{
     private final GraphNode<D> source;
     private final GraphNode<D> destination;
 
@@ -18,5 +18,10 @@ public final class GraphEdge<D> {
     /** Gets the destination node of this edge. */
     public GraphNode<D> getDestination() {
         return destination;
+    }
+
+    @Override
+    public void accept(IGraphElementVisitor<D> visitor) {
+        visitor.visit(this);
     }
 }

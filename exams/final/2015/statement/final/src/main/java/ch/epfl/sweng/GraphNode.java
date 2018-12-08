@@ -3,7 +3,7 @@ package ch.epfl.sweng;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class GraphNode<D> {
+public final class GraphNode<D> implements IGraphElement<D>{
     private final List<GraphNode<D>> successors;
     private D data;
 
@@ -45,5 +45,10 @@ public final class GraphNode<D> {
         }
         
         return edges;
+    }
+
+    @Override
+    public void accept(IGraphElementVisitor<D> visitor) {
+        visitor.visit(this);
     }
 }

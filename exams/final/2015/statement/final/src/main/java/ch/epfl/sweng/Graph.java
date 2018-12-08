@@ -3,7 +3,7 @@ package ch.epfl.sweng;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class Graph<D> {
+public final class Graph<D> implements IGraphElement<D> {
     /** Implementation detail, not part of the graph. */
     private final GraphNode<D> root;
 
@@ -33,12 +33,26 @@ public final class Graph<D> {
      * The order in which nodes are returned is not specified.
      */
     public List<GraphNode<D>> getAllNodes() {
-        List<GraphNode<D>> nodes = new ArrayList<>();
+        GetAllNodesVisitor<D> getAllNodesVisitor = new GetAllNodesVisitor<>();
+        getAllNodesVisitor.visit(this);
 
-        for (GraphEdge<D> edge : root.getForwardEdges()) {
-            nodes.add(edge.getDestination());
-        }
+        List<GraphNode<D>> nodes = getAllNodesVisitor.getGraphNodeList();
+
+//        List<GraphNode<D>> nodes = new ArrayList<>();
+//
+//        for (GraphEdge<D> edge : root.getForwardEdges()) {
+//            nodes.add(edge.getDestination());
+//        }
 
         return nodes;
+    }
+
+    public GraphNode<D> getRoot(){
+        return this.root;
+    }
+
+    @Override
+    public void accept(IGraphElementVisitor<D> visitor) {
+        visitor.visit(this);
     }
 }
