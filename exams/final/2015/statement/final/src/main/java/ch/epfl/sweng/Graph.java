@@ -1,6 +1,7 @@
 package ch.epfl.sweng;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public final class Graph<D> {
@@ -17,10 +18,14 @@ public final class Graph<D> {
      * If no such node exists, it will be created.
      */
     public GraphNode<D> getNode(D data) {
-        for (GraphEdge<D> edge : root.getForwardEdges()) {
-            if (edge.getDestination().getData().equals(data)) {
-                return edge.getDestination();
+        GraphEdgeIterator<D> graphEdgeIterator = root.getForwardEdges();
+
+        while (graphEdgeIterator.hasNext()) {
+            GraphEdge<D> currE = graphEdgeIterator.next();
+            if (currE.getDestination().getData().equals(data)) {
+                return currE.getDestination();
             }
+
         }
 
         GraphNode<D> newNode = new GraphNode<>(data);
@@ -33,9 +38,11 @@ public final class Graph<D> {
      * The order in which nodes are returned is not specified.
      */
     public List<GraphNode<D>> getAllNodes() {
+        GraphEdgeIterator<D> graphEdgeIterator = root.getForwardEdges();
         List<GraphNode<D>> nodes = new ArrayList<>();
 
-        for (GraphEdge<D> edge : root.getForwardEdges()) {
+        while (graphEdgeIterator.hasNext()){
+            GraphEdge<D> edge = graphEdgeIterator.next();
             nodes.add(edge.getDestination());
         }
 
