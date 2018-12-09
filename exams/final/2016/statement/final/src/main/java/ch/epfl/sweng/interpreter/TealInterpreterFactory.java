@@ -4,6 +4,9 @@ import ch.epfl.sweng.TealFunction;
 import ch.epfl.sweng.TealLibrary;
 import ch.epfl.sweng.nodes.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Factory that creates Teal interpreters for specific purposes.
  */
@@ -21,7 +24,6 @@ public final class TealInterpreterFactory {
             throw new IllegalArgumentException("library is null");
         }
 
-//        TODO: return basic interpreter
         return new BasicInterpreter(library);
     }
 
@@ -33,8 +35,7 @@ public final class TealInterpreterFactory {
      * @return The interpreter.
      */
     public static TealInterpreter cachedInterpreter(final TealLibrary library) {
-        // TODO
-        return null;
+        return new CachedInterpreter(new BasicInterpreter(library));
     }
 
 
@@ -129,6 +130,32 @@ public final class TealInterpreterFactory {
 
             return result;
 
+        }
+    }
+
+    private static final class CachedInterpreter implements TealInterpreter {
+        private final TealInterpreter wrapped;
+        private final Map<String, Map<Integer, Integer>> cached;
+
+        public CachedInterpreter(TealInterpreter tealInterpreter) {
+            this.wrapped = tealInterpreter;
+            cached = new HashMap<>();
+        }
+
+        @Override
+        public int invoke(String functionName, Integer argument) {
+            if (!cached.containsKey(functionName)) {
+                cached.put(functionName, new HashMap<>());
+            }
+
+            if (!cached.get(functionName).containsKey(argument)){
+                int result = wrapped.invoke(functionName, argument);
+                cached.get(functionName).put(argument, result);
+
+                return result;
+            }
+
+            return cached.get(functionName).get(argument);
         }
     }
 
