@@ -98,16 +98,8 @@ public final class TealParserTests {
     }
 
     @Test (expected = TealParseException.class)
-    public void invalidSymbol() throws TealParseException {
-        final TealLibrary library = TealParser.parse("f(x): x + 1" +
-                System.lineSeparator()+ "g(#): # + 1");
-
-        assertThat(library.functions.entrySet(), hasSize(1));
-    }
-
-    @Test (expected = NumberFormatException.class)
-    public void decimalNumFunction() throws TealParseException {
-        final TealLibrary library = TealParser.parse("f(n): n + a");
+    public void largeNumberError() throws TealParseException {
+        final TealLibrary library = TealParser.parse("f(n): 1000000000000000000000");
 
         assertThat(library.functions.entrySet(), hasSize(0));
     }
