@@ -36,6 +36,82 @@ public final class TealParserTests {
     }
 
     // TODO: Add your own tests
+    @Test (expected = IllegalArgumentException.class)
+    public void testParseNull() throws TealParseException {
+        TealParser.parse(null);
+    }
+
+    @Test
+    public void testZeroFunctions() throws TealParseException {
+        final TealLibrary library = TealParser.parse("");
+
+        assertThat(library.functions.entrySet(), hasSize(0));
+    }
+
+    @Test (expected = TealParseException.class)
+    public void testDuplicateName() throws TealParseException {
+        final TealLibrary library = TealParser.parse("f(n): n"+System.lineSeparator()+"f(n): n+1");
+
+        assertThat(library.functions.entrySet(), hasSize(1));
+        assertThat(library, hasFunction("f", "n", new TealVariableNode("n")));
+    }
+
+    @Test
+    public void testNoParamFunction() throws TealParseException {
+        final TealLibrary library = TealParser.parse("answer(): 42");
+
+        assertThat(library.functions.entrySet(), hasSize(1));
+    }
+
+    @Test (expected = TealParseException.class)
+    public void testLeftOverInput() throws TealParseException {
+        final TealLibrary library = TealParser.parse("f(n): n (");
+
+        assertThat(library.functions.entrySet(), hasSize(1));
+        assertThat(library, hasFunction("f", "n", new TealVariableNode("n")));
+    }
+
+    @Test
+    public void additionNode() throws TealParseException {
+        final TealLibrary library  = TealParser.parse("f(x): x + 2");
+
+        assertThat(library.functions.entrySet(), hasSize(1));
+        assertThat(library, hasFunction("f", "x", new TealVariableNode("x + 2")));
+    }
+
+    @Test
+    public void validFunctionCall() throws TealParseException {
+        final TealLibrary library = TealParser.parse("f(x): x + 1"+
+                System.lineSeparator() + "h(): 100" +
+                System.lineSeparator() + "g(n): !f(2+n) + 1" +
+                System.lineSeparator() + "z(x): !h() + x");
+
+        assertThat(library.functions.entrySet(), hasSize(4));
+    }
+
+    @Test (expected = TealParseException.class)
+    public  void invalidFunctionCall() throws TealParseException {
+        final TealLibrary library = TealParser.parse("f(x): x + 1"+
+                System.lineSeparator() + "g(n): !2(2+n) + 1");
+
+        assertThat(library.functions.entrySet(), hasSize(1));
+    }
+
+    @Test (expected = TealParseException.class)
+    public void invalidSymbol() throws TealParseException {
+        final TealLibrary library = TealParser.parse("f(x): x + 1" +
+                System.lineSeparator()+ "g(#): # + 1");
+
+        assertThat(library.functions.entrySet(), hasSize(1));
+    }
+
+    @Test (expected = NumberFormatException.class)
+    public void decimalNumFunction() throws TealParseException {
+        final TealLibrary library = TealParser.parse("f(n): n + a");
+
+        assertThat(library.functions.entrySet(), hasSize(0));
+    }
+
     @Test
     public void identityFunction() throws TealParseException {
         final TealLibrary library = TealParser.parse("f(n): n");
@@ -97,7 +173,10 @@ public final class TealParserTests {
                 result = false;
             }
 
-            if (body.equals(function.body)) {
+            String strBody = body.toString();
+            String strFunctionBody = function.body.toString();
+
+            if (strBody.equals(strFunctionBody)) {
                 return result;
             }
 
